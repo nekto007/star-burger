@@ -196,6 +196,29 @@ class Order(models.Model):
         choices=ChoicesPayment.choices,
         db_index=True
     )
+    assigned_restaurant = models.ForeignKey(
+        Restaurant,
+        verbose_name='готовит ресторан',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    def process_order(self):
+        menu_items = self.order_elements.all()
+        available_restaurants = []
+
+        for item in menu_items:
+            if item.product.menu_items.filter(availability=True).exists():
+                available_restaurants.append(item.product.menu_items.first().restaurant)
+
+        return list(set(available_restaurants))
+
+    def get_assigned_restaurant(self):
+        if self.assigned_restaurant:
+            return self.assigned_restaurant.name
+        else:
+            return None
 
     objects = OrderQuerySer.as_manager()
 

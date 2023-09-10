@@ -18,6 +18,7 @@
       <th>Клиент</th>
       <th>Телефон</th>
       <th>Адрес доставки</th>
+      <th>Рестораны</th>
       <th>Комментарий</th>
       <th>Статус</th>
       <th>Способ оплаты</th>
@@ -31,6 +32,20 @@
         <td>{{ item.surname }} {{ item.name }}</td>
         <td>{{ item.contact_phone }}</td>
         <td>{{ item.address }}</td>
+        {% if item.get_assigned_restaurant %}
+          <td>Готовит: {{ item.get_assigned_restaurant }}</td>
+        {% elif item.available_restaurants %}
+          <td>
+            <details>
+              <summary>Может быть приготовлен ресторанами:</summary>
+              <ul>
+                {% for restaurant in item.available_restaurants %}
+                    <li>{{ restaurant.name }}</li>
+                {% endfor %}
+              </ul>
+            </details>
+          </td>
+        {% endif %}
         <td>{{ item.comment }}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.payment }}</td>
