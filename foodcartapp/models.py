@@ -140,6 +140,11 @@ class Order(models.Model):
         ACCEPTED = 'Принят', 'Принят'
         RAW = 'Необработанный', 'Необработанный'
 
+    class ChoicesPayment(models.TextChoices):
+        ELECTRONIC_MONEY = 'Электронные', 'Электронные'
+        CASH = 'Наличные', 'Наличные'
+        NOT_SPECIFIED = 'Не указан', 'Не указан'
+
     address = models.CharField(
         'адрес',
         max_length=100,
@@ -182,6 +187,13 @@ class Order(models.Model):
         'дата доставки',
         blank=True,
         null=True,
+        db_index=True
+    )
+    payment = models.CharField(
+        'способ оплаты',
+        default=ChoicesPayment.NOT_SPECIFIED,
+        max_length=30,
+        choices=ChoicesPayment.choices,
         db_index=True
     )
 
