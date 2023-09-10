@@ -131,6 +131,14 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
+
+    class ChoicesStatus(models.TextChoices):
+        COMPLETED = 'Завершен', 'Завершен'
+        ON_MY_WAY = 'В пути', 'В пути'
+        PROGRESS = 'Готовится', 'Готовится'
+        ACCEPTED = 'Принят', 'Принят'
+        RAW = 'Необработанный', 'Необработанный'
+
     address = models.CharField(
         'адрес',
         max_length=100,
@@ -145,6 +153,13 @@ class Order(models.Model):
     )
     contact_phone = PhoneNumberField(
         'контактный телефон',
+    )
+    status = models.CharField(
+        'статус',
+        default=ChoicesStatus.RAW,
+        max_length=30,
+        choices=ChoicesStatus.choices,
+        db_index=True
     )
 
     objects = OrderQuerySer.as_manager()
