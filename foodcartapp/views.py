@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.templatetags.static import static
 
 from .models import Order, OrderElements, Product
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 def banners_list_api(request):
@@ -58,6 +60,7 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
     try:
         order = json.loads(request.body.decode())
@@ -75,5 +78,16 @@ def register_order(request):
             product_number=product['quantity'],
         )
     except ValueError:
-        return JsonResponse({'error': 'Invalid input'})
-    return JsonResponse({})
+        pass
+    orders = Order.objects.all()
+    registers_order = []
+    for order in orders:
+        registers_order.append(
+            {
+                'address': order.address,
+                'name': order.name,
+                'surname': order.surname,
+                'contact_phone': str(order.contact_phone)
+            }
+        )
+    return Response(registers_order)
