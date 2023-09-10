@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import F, Sum
 from phonenumber_field.modelfields import PhoneNumberField
 
+from django.utils import timezone
 
 class Restaurant(models.Model):
     name = models.CharField(
@@ -164,6 +165,21 @@ class Order(models.Model):
     comment = models.TextField(
         'комментарий',
         blank=True
+    )
+    created_at = models.DateTimeField(
+        'дата создания заказа',
+        default=timezone.now,
+        blank=True
+    )
+    called_at = models.DateTimeField(
+        'дата звонка',
+        default=timezone.now,
+        null=True
+    )
+    delivered_at = models.DateTimeField(
+        'дата доставки',
+        blank=True,
+        null=True
     )
 
     objects = OrderQuerySer.as_manager()
