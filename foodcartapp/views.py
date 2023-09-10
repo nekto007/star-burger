@@ -1,11 +1,12 @@
-import json
-from rest_framework import status
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.templatetags.static import static
-
-from .models import Order, OrderElements, Product
+from phonenumber_field.phonenumber import PhoneNumber
+from phonenumber_field.validators import validate_international_phonenumber
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+from .models import Order, OrderElements, Product
 
 
 def banners_list_api(request):
@@ -68,24 +69,44 @@ def register_order(request):
             product = order['products']
         else:
             return Response({'error': 'Product key not presented or not list'})
-        if isinstance(product, list) and product != []:
-            product = order['products'][0]
-            product_instance = Product.objects.get(id=product['product'])
-            new_order = Order.objects.create(
-                address=order['address'],
-                name=order['firstname'],
-                surname=order['lastname'],
-                contact_phone=order['phonenumber'],
-            )
-            OrderElements.objects.create(
-                order=new_order,
-                product=product_instance,
-                product_number=product['quantity'],
-            )
-        else:
+        if not isinstance(product, list) and product != []:
             return Response({'error': 'Product key not presented or not list'})
-    except ValueError:
-        return Response()
+        if 'address' not in order or 'firstname' not in order or 'lastname' not in order:
+            return Response({'error': 'Order key not presented or not list'})
+        product = order['products'][0]
+        if 'product' not in product or 'quantity' not in product:
+            return Response({'error': 'Order key not presented or not list'})
+
+        product_instance = Product.objects.filter(id=product['product']).first()
+        if not product_instance:
+            return Response({'error': 'Invalid product ID'})
+        if not order['filename']:
+            return Response({'error': 'Firstname field cannot be empty'})
+        if not order['lastname']:
+            return Response({'error': 'Lastname field cannot be empty'})
+        if not order['phonenumber']:
+            return Response({'error': 'Phonenumber field cannot be empty'})
+        if not order['address']:
+            return Response({'error': 'Address field cannot be empty'})
+        try:
+            phone_number = PhoneNumber.from_string(order['phonenumber'])
+            validate_international_phonenumber(phone_number)
+        except ValidationError:
+            return Response({'error': 'Invalid phone number'})
+        new_order = Order.objects.create(
+            address=order['address'],
+            name=order['firstname'],
+            surname=order['lastname'],
+            contact_phone=phone_number,
+        )
+        OrderElements.objects.create(
+            order=new_order,
+            product=product_instance,
+            product_number=product['quantity'],
+        )
+    except ValueError as e:
+        return Response({'error': str(e)})
+
     orders = Order.objects.all()
     registers_order = []
     for order in orders:
