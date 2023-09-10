@@ -1,8 +1,9 @@
+import json
+
 from django.http import JsonResponse
 from django.templatetags.static import static
 
-
-from .models import Product
+from .models import Order, OrderElements, Product
 
 
 def banners_list_api(request):
@@ -58,5 +59,21 @@ def product_list_api(request):
 
 
 def register_order(request):
-    # TODO это лишь заглушка
+    try:
+        order = json.loads(request.body.decode())
+        product = order['products'][0]
+        product_instance = Product.objects.get(id=product['product'])
+        new_order = Order.objects.create(
+            address=order['address'],
+            name=order['firstname'],
+            surname=order['lastname'],
+            contact_phone=order['phonenumber'],
+        )
+        OrderElements.objects.create(
+            order=new_order,
+            product=product_instance,
+            product_number=product['quantity'],
+        )
+    except ValueError:
+        return JsonResponse({'error': 'Invalid input'})
     return JsonResponse({})
