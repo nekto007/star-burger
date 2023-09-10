@@ -1,9 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Sum
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
-from django.utils import timezone
 
 class Restaurant(models.Model):
     name = models.CharField(
@@ -131,8 +133,15 @@ class RestaurantMenuItem(models.Model):
         return f"{self.restaurant.name} - {self.product.name}"
 
 
-class Order(models.Model):
+def validate_price(value):
+    if value < 0:
+        raise ValidationError(
+            _('%(value)s a negative number'),
+            params={'value': value},
+        )
 
+
+class Order(models.Model):
     class ChoicesStatus(models.TextChoices):
         COMPLETED = 'Завершен', 'Завершен'
         ON_MY_WAY = 'В пути', 'В пути'
@@ -149,16 +158,17 @@ class Order(models.Model):
         'адрес',
         max_length=100,
     )
-    name = models.CharField(
+    firstname = models.CharField(
         'имя',
         max_length=50
     )
-    surname = models.CharField(
+    lastname = models.CharField(
         'фамилия',
         max_length=50
     )
-    contact_phone = PhoneNumberField(
+    phonenumber = PhoneNumberField(
         'контактный телефон',
+        region='RU',
     )
     status = models.CharField(
         'статус',
@@ -227,7 +237,7 @@ class Order(models.Model):
         verbose_name_plural = 'заказы'
 
     def __str__(self):
-        return f"{self.surname} {self.name}"
+        return f"{self.lastname} {self.firstname}"
 
 
 class OrderElements(models.Model):
@@ -243,10 +253,17 @@ class OrderElements(models.Model):
         related_name='order_elements',
         verbose_name='товар',
     )
-    product_number = models.IntegerField(
+    quantity = models.IntegerField(
         'Количество продуктов в заказе',
         validators=[MinValueValidator(0), MaxValueValidator(5)],
         db_index=True)
+    price = models.DecimalField(
+        'цена',
+        max_digits=5,
+        decimal_places=2,
+        validators=[validate_price, MinValueValidator(0)],
+        null=True
+    )
 
     class Meta:
         verbose_name = 'элемент заказа'
@@ -256,4 +273,4 @@ class OrderElements(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.product.name} {self.order.surname} {self.order.name} {self.order.address}"
+        return f"{self.product.name} {self.order.lastname} {self.order.firstname} {self.order.address}"

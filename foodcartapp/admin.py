@@ -117,10 +117,10 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
-        'name',
-        'surname',
+        'firstname',
+        'lastname',
         'address',
-        'contact_phone',
+        'phonenumber',
         'assigned_restaurant'
     ]
     list_editable = [

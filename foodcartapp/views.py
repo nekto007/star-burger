@@ -3,9 +3,10 @@ from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.serializers import ModelSerializer, ValidationError
+from rest_framework.serializers import ModelSerializer
 
-from .models import Order, OrderElements, Product
+from foodcartapp.serializers import OrderSerializer
+from .models import OrderElements, Product
 
 
 def banners_list_api(request):
@@ -66,41 +67,28 @@ class OrderElementsSerializer(ModelSerializer):
         fields = ['product', 'product_number']
 
 
-class OrderSerializer(ModelSerializer):
-    products = OrderElementsSerializer(many=True)
-
-    class Meta:
-        model = Order
-        fields = ['address', 'name', 'surname', 'contact_phone', 'products']
-
-
 @transaction.atomic
 @api_view(['POST'])
 def register_order(request):
     try:
-        order = request.data
-        if not order['products']:
-            raise ValidationError('Expects products field be a list')
-        serializer = OrderSerializer(data=order)
+        serializer = OrderSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        product = serializer.validated_data['products'][0]
-        new_order = Order.objects.create(
-            address=serializer.validated_data['address'],
-            name=serializer.validated_data['name'],
-            surname=serializer.validated_data['surname'],
-            contact_phone=serializer.validated_data['contact_phone'],
-        )
-        OrderElements.objects.create(
-            order=new_order,
-            product=product['product'],
-            product_number=product['product_number'],
-        )
+        products = serializer.validated_data.pop('products')
+        new_order = serializer.create(serializer.validated_data)
+        for product in products:
+            product_obj = product['product']
+            OrderElements.objects.create(
+                order=new_order,
+                product=product['product'],
+                quantity=product['quantity'],
+                price=product_obj.price
+            )
         order = {
             'id': new_order.id,
             'address': new_order.address,
-            'name': new_order.name,
-            'surname': new_order.surname,
-            'contact_phone': new_order.contact_phone,
+            'firstname': new_order.firstname,
+            'lastname': new_order.lastname,
+            'phonenumber': new_order.phonenumber,
         }
         return Response(order)
     except ValueError as e:
