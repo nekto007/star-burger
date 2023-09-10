@@ -20,6 +20,7 @@
       <th>Адрес доставки</th>
       <th>Комментарий</th>
       <th>Статус</th>
+      <th>Способ оплаты</th>
       <th>Ссылка на админку</th>
     </tr>
 
@@ -32,6 +33,7 @@
         <td>{{ item.address }}</td>
         <td>{{ item.comment }}</td>
         <td>{{ item.status }}</td>
+        <td>{{ item.payment }}</td>
         <td><a href="{% url "admin:foodcartapp_order_change" object_id=item.id %}?next={{ request.get_full_path|urlencode }}">Редактировать</a></td>
       </tr>
     {% endfor %}
