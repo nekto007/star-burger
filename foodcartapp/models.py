@@ -161,6 +161,10 @@ class Order(models.Model):
         choices=ChoicesStatus.choices,
         db_index=True
     )
+    comment = models.TextField(
+        'комментарий',
+        blank=True
+    )
 
     objects = OrderQuerySer.as_manager()
 
