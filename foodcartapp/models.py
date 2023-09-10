@@ -169,17 +169,20 @@ class Order(models.Model):
     created_at = models.DateTimeField(
         'дата создания заказа',
         default=timezone.now,
-        blank=True
+        blank=True,
+        db_index=True
     )
     called_at = models.DateTimeField(
         'дата звонка',
         default=timezone.now,
-        null=True
+        null=True,
+        db_index=True
     )
     delivered_at = models.DateTimeField(
         'дата доставки',
         blank=True,
-        null=True
+        null=True,
+        db_index=True
     )
 
     objects = OrderQuerySer.as_manager()
