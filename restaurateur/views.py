@@ -71,16 +71,16 @@ def fetch_coordinates(apikey, address):
         "apikey": apikey,
         "format": "json",
     })
-    response.raise_for_status()
-    found_places = response.json()['response']['GeoObjectCollection']['featureMember']
-
-    if not found_places:
+    try:
+        response.raise_for_status()
+        found_places = response.json()['response']['GeoObjectCollection']['featureMember']
+    except requests.exceptions.RequestException:
         return None
 
-    most_relevant = found_places[0]
-    lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
-
-    return lon, lat
+    if found_places:
+        most_relevant = found_places[0]
+        lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
+        return lon, lat
 
 
 @user_passes_test(is_manager, login_url='restaurateur:login')

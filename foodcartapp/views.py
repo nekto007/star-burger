@@ -1,4 +1,3 @@
-from django.db import transaction
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
@@ -67,29 +66,14 @@ class OrderElementsSerializer(ModelSerializer):
         fields = ['product', 'product_number']
 
 
-@transaction.atomic
 @api_view(['POST'])
 def register_order(request):
     try:
         serializer = OrderSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        products = serializer.validated_data.pop('products')
-        new_order = serializer.create(serializer.validated_data)
-        for product in products:
-            product_obj = product['product']
-            OrderElements.objects.create(
-                order=new_order,
-                product=product['product'],
-                quantity=product['quantity'],
-                price=product_obj.price
-            )
-        order = {
-            'id': new_order.id,
-            'address': new_order.address,
-            'firstname': new_order.firstname,
-            'lastname': new_order.lastname,
-            'phonenumber': new_order.phonenumber,
-        }
-        return Response(order)
+        order = serializer.create(serializer.validated_data)
+        serializer = OrderSerializer(order)
+
+        return Response(serializer.data)
     except ValueError as e:
         return Response({'error': str(e)})

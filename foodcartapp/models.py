@@ -43,7 +43,7 @@ class ProductQuerySet(models.QuerySet):
 
 class OrderQuerySer(models.QuerySet):
     def order_price(self):
-        return self.annotate(total_price=Sum(F('order_elements__product_number') * F('order_elements__product__price')))
+        return self.annotate(total_price=Sum(F('products__quantity') * F('products__product__price')))
 
 
 class ProductCategory(models.Model):
@@ -215,7 +215,7 @@ class Order(models.Model):
     )
 
     def process_order(self):
-        menu_items = self.order_elements.all()
+        menu_items = self.products.all()
         available_restaurants = []
 
         for item in menu_items:
@@ -243,7 +243,7 @@ class Order(models.Model):
 class OrderElements(models.Model):
     order = models.ForeignKey(
         Order,
-        related_name='order_elements',
+        related_name='products',
         verbose_name="заказ",
         on_delete=models.CASCADE,
     )
@@ -261,8 +261,7 @@ class OrderElements(models.Model):
         'цена',
         max_digits=5,
         decimal_places=2,
-        validators=[validate_price, MinValueValidator(0)],
-        null=True
+        validators=[validate_price, MinValueValidator(0)]
     )
 
     class Meta:
