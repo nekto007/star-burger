@@ -68,12 +68,9 @@ class OrderElementsSerializer(ModelSerializer):
 
 @api_view(['POST'])
 def register_order(request):
-    try:
-        serializer = OrderSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        order = serializer.create(serializer.validated_data)
-        serializer = OrderSerializer(order)
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    order = serializer.create(serializer.validated_data)
+    serializer = OrderSerializer(order)
 
-        return Response(serializer.data)
-    except ValueError as e:
-        return Response({'error': str(e)})
+    return Response(serializer.data)

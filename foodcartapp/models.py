@@ -1,9 +1,7 @@
-from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Sum
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -133,14 +131,6 @@ class RestaurantMenuItem(models.Model):
         return f"{self.restaurant.name} - {self.product.name}"
 
 
-def validate_price(value):
-    if value < 0:
-        raise ValidationError(
-            _('%(value)s a negative number'),
-            params={'value': value},
-        )
-
-
 class Order(models.Model):
     class ChoicesStatus(models.TextChoices):
         COMPLETED = 'Завершен', 'Завершен'
@@ -261,7 +251,7 @@ class OrderElements(models.Model):
         'цена',
         max_digits=5,
         decimal_places=2,
-        validators=[validate_price, MinValueValidator(0)]
+        validators=[MinValueValidator(0)]
     )
 
     class Meta:
