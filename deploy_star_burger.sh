@@ -27,7 +27,7 @@ curl --request POST \
      --header 'content-type: application/json' \
      --data '
               {
-                "environment": "'deployment'",
+                "environment": "'development'",
                 "local_username": "'"${USER}"'",
                 "revision": "'"${sha}"'",
                 "status": "succeeded"
