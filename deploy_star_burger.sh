@@ -30,6 +30,7 @@ curl --request POST \
                 "environment": "'development'",
                 "local_username": "'"${USER}"'",
                 "revision": "'"${sha}"'",
+                "comment": "'"${comment}"'",
                 "status": "succeeded"
               }
             '
