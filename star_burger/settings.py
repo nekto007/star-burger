@@ -105,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-if env.bool('ROLLBAR_TOKEN', False):
+if 'ROLLBAR_TOKEN' in os.environ:
     ROLLBAR = {
         'access_token': env('ROLLBAR_TOKEN'),
         'environment': env('ROLLBAR_ENVIRONMENT', 'development'),
