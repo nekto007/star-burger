@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-source .env
+source /var/www/star-burger/star_burger/.env
 echo "Check for updates on remote git repository."
 git pull
 
