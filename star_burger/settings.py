@@ -9,7 +9,7 @@ env = Env()
 env.read_env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 SECRET_KEY = env('SECRET_KEY')
@@ -105,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-if not DEBUG:
+if env.bool('ROLLBAR_TOKEN', False):
     ROLLBAR = {
         'access_token': env('ROLLBAR_TOKEN'),
         'environment': env('ROLLBAR_ENVIRONMENT', 'development'),
