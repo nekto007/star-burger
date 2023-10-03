@@ -1,10 +1,11 @@
 django==3.2.15
 django-debug-toolbar==3.2.1
-Pillow==8.2.0
+Pillow==10.0.1
 environs[django]==9.3.2
 django-phonenumber-field[phonenumbers]==6.3.0
 djangorestframework==3.14.0
 requests==2.31.0
 geopy==2.3.0
 rollbar==0.16.3
-psycopg2==2.9.8
+psycopg2-binary==2.9.8
+gunicorn==21.2.0
