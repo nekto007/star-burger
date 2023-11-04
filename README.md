@@ -153,6 +153,60 @@ Parcel будет следить за файлами в каталоге `bundle
 - `DB_URL` = `postgres://username:password@host:port/name_db`
 
 Сайт доступен по URL: [starburger](https://starburger.edparfum.ru/)
+
+## Как запустить сборку Docker
+
+Установите [Docker](https://docs.docker.com/engine/install/) и [Docker Compose](https://docs.docker.com/compose/install/).
+
+
+1. Клонируйте репозиторий:
+```sh
+git clone https://github.com/nekto007/star-burger.git
+```
+
+2. Создайте файл `.env` в каталоге `star_burger` и определите необходимые переменные окружения:
+
+- `DEBUG` — дебаг-режим. Поставьте `False`.
+- `SECRET_KEY`=`your_secret_key` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+- `YANDEX_GEO_API_KEY`=`your_yandex_token` [получить токен яндекс](https://developer.tech.yandex.ru/services)
+- `ROLLBAR_TOKEN`=`your_rollbar_token` [см. документацию Rollbar](https://rollbar.com/)
+- `POSTGRESQL_PASSWORD`=`your_database_url` — [см. туториал Postgres](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04)
+
+Замените `your_secret_key`, `your_yandex_token`, `your_rollbar_token`, `your_database_url` на реальные значения для вашего окружения.
+
+3. Соберите Docker образы и запустите контейнеры:
+
+```sh
+docker-compose up --build
+```
+
+Команда `--build` гарантирует, что образы будут пересобраны. Если вы хотите запустить контейнеры в фоновом режиме, добавьте флаг `-d`.
+
+4. После запуска контейнеров, ваше приложение будет доступно по адресу `http://localhost:80`.
+
+## Управление проектом через Docker
+
+Чтобы выполнить управляющие команды, такие как миграции и создание суперпользователя, используйте следующие команды:
+
+- Выполнить миграции:
+
+```sh
+docker-compose exec web python manage.py migrate
+```
+
+- Создать суперпользователя:
+
+```sh
+docker-compose exec web python manage.py createsuperuser
+```
+
+- Собрать статические файлы:
+
+```sh
+docker-compose exec web python manage.py collectstatic
+```
+
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).

@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.8"
+  },
+  "scripts": {
+  "build": "parcel build bundles-src/index.js --dist-dir bundles --public-url='./' --log-level verbose"
   }
 }
