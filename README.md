@@ -192,22 +192,10 @@ docker-compose up --build
 
 Чтобы выполнить управляющие команды, такие как миграции и создание суперпользователя, используйте следующие команды:
 
-- Выполнить миграции:
-
-```sh
-docker-compose exec web python manage.py migrate
-```
-
 - Создать суперпользователя:
 
 ```sh
 docker-compose exec web python manage.py createsuperuser
-```
-
-- Собрать статические файлы:
-
-```sh
-docker-compose exec web python manage.py collectstatic
 ```
 
 ## Цели проекта
