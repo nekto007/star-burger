@@ -1,5 +1,5 @@
 # Используйте образ Node.js для установки зависимостей и сборки статических файлов
-FROM node:14-bullseye as build-stage
+FROM node:14 as build-stage
 
 WORKDIR /app
 

@@ -175,6 +175,9 @@ git clone https://github.com/nekto007/star-burger.git
 
 Замените `your_secret_key`, `your_yandex_token`, `your_rollbar_token`, `your_database_url` на реальные значения для вашего окружения.
 
+2.1 Запуск на процессорах ARM
+
+Для запуска docker контейнера на процессорах ARM нужно в dockerfile заменить строку: FROM node:14 as build-stage на FROM node:14-bullseye as build-stage
 3. Соберите Docker образы и запустите контейнеры:
 
 ```sh
